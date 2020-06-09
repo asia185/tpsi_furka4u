@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <title>Lista ofert</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+</head>
+<body>
+    <section layout:fragment="content">
+        <div id="offerFilter" class="panel panel-default">
+            <div class="panel-heading">Szukaj ofert</div>
+            <div class="panel-body">
+                <form th:object="${offerFilter}" id="offerFilterForm" action="/" method="get" class="form-inline">
+                <select th:field="*{manufacturerId}" class="form-control" id="manufacturers">
+                                    <option value="">-- WYBIERZ --</option>
+                        <option th:each="manufacturer : ${carManufacturers}" th:value="${manufacturer.id}" th:text="${manufacturer.name}">Marka</option>
+                    </select>
+                    <select th:field="*{modelId}" class="form-control models">
+                        <option value="">-- WYBIERZ --</option>
+                        <option th:each="model : ${carModels}" th:value="${model.id}" th:text="${model.name}">Model</option>
+                    </select>
+                    <select th:field="*{fuelTypeId}" class="form-control">
+                        <option value="">-- WYBIERZ --</option>
+                        <option th:each="fuelType : ${fuelTypes}" th:value="${fuelType.id}" th:text="${fuelType.name}"></option>
+                    </select>
+                    Od <input th:field="*{yearFrom}" type="number" class="form-control">
+                    Do <input th:field="*{yearTo}" type="number" class="form-control">
+
+                    <label for="desc">Opis</label>
+                    <input th:field="*{description}" type="text" id="desc" class="form-control" />
+                    <input type="submit" value="Filtruj" class="form-control"/>
+                </form>
+            </div>
+        </div>
+        <div id="sorter" class="panel panel-default">
+            <form th:object="${offerSorter}" id="offerSorterForm" action="/" method="get" class="form-inline">
+                <select th:field="*{order}" class="form-control">
+                    <option value="title">Tytuł</option>
+                    <option value="price">Cena</option>
+                    <option value="year">Rok produkcji</option>
+                    <option value="created_at">Data utworzenia</option>
+                </select>
+                <select th:field="*{dir}" class="form-control">
+                    <option value="asc">Rosnąco</option>
+                    <option value="desc">Malejąco</option>
+                </select>
+                <input type="submit" class="form-control" value="Sortuj">
+            </form>
+        </div>
+        <table class="table">
+            <tr>
+                <th>Tytuł</th>
+                <th>Marka</th>
+                <th>Model</th>
+                <th>Rocznik</th>
+                <th class="text-right">Cena</th>
+                <th>Data utworzenia</th>
+                <th></th>
+            </tr>
+            <tr th:each="offer : ${offers}">
+
+                <td th:text="${offer.title}"></td>
+                <td th:text="${offer.model.manufacturer.name}"></td>
+                <td th:text="${offer.model.name}"></td>
+                <td th:text="${offer.year}"></td>
+                <td class="text-right">
+                    <span th:text="${#numbers.formatDecimal(offer.price, 0, 'WHITESPACE', 0,'COMMA')}"></span>
+                    zł
+                </td>
+                <td th:text="${#temporals.format(offer.createdAt, 'yyyy-MM-dd HH:mm:ss.SSSS')}"></td>
+                <td><a th:href="|/offer/${offer.id}|">Pokaż</a></td>
+            </tr>
+        </table>
+        <nav aria-label="Page navigation example" th:if="${total} > ${size}">
+            <ul class="pagination">
+                <li class="page-item" th:if="${page} > 1"><a class="page-link" th:href="|/${page - 1}/${order}/${dir}|">Previous</a></li>
+                <li class="page-item" th:if="${page} > 1"><a class="page-link" th:href="|/${page - 1}/${order}/${dir}|" th:text="${page - 1}">1</a></li>
+                <li class="page-item"><a class="page-link" th:text="|${page}">2</a></li>
+                <li class="page-item"><a class="page-link" th:href="|/${page + 1}/${order}/${dir}|" th:text="${page + 1}">3</a></li>
+                <li class="page-item"><a class="page-link" th:href="|/${page + 1}/${order}/${dir}|">Next</a></li>
+            </ul>
+        </nav>
+        <script type="text/javascript">
+            $('#manufacturers').change(() => getModels($('#manufacturers').val()));
+        </script>
+    </section>
+</body>
+</html>

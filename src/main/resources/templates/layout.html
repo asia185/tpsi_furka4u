@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+    <title layout:title-pattern="Furka4U - $CONTENT_TITLE">Furka4U</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript">
+
+        function getModels(manufacturerId) {
+            $.ajax({
+                url: '/models/' + manufacturerId,
+                method: 'GET'
+            }).done(response => {
+                $(".models").html('');
+                for (let model of response) {
+                    $(".models").append(`<option value="${model.id}">${model.name}</option>`);
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/BlondeWomanDrivingCar.svg" style="float: right" height="86pt" alt=""/>
+
+        <h1>Furka4U <small>Najlepsze furki w necie</small></h1>
+        <h4>
+            <a href="/">Przeglądaj ogłoszenia</a> |
+            <a th:if="${@userSession.getId() != null}" href="/newoffer">Dodaj ogłoszenie</a> |
+            <a th:if="${@userSession.getId() == null}" href="/login">Zaloguj się</a>
+            <span th:if="${@userSession.getId() != null}" th:text="|Zalogowany jako ${@userSession.getUsername()}|"></span>
+             <a th:if="${@userSession.getId() != null}" href="/logout">Wyloguj się</a>
+        </h4>
+    </div>
+    <div layout:fragment="content">
+        Tu będzie wstawiona właściwa zawartość widoku.
+    </div>
+</div>
+</body>
+</html>
